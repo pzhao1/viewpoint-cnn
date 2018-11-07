@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+// Represents a camera pose whose optical axis goes through the origin.
+// Only has 4 degrees of freedom. The other 2 are fixed by the constraint.
+message CameraPoseCentered {
+	double azimuth_rad = 1;
+	double elevation_rad = 2;
+	double axial_rotation_rad = 3;
+	double distance = 4;
+}
+
+// Header of a RSSynsetMeta object (everything not changed during model rendering).
+// In particular, random synthesis images are rendered from a number of random configurations.
+// The total number of these configurations are stored in the header.
+message RSSynsetMetaHeader {
+	string shapenet_synset = 1;
+
+	// The number of random camera poses to render random synthesis images for.
+	uint32 num_configs = 2;
+}
+
+// Random synthesis metadata for a record (image).
+message RSRecordMeta {
+	// Index of this record (image) in record_meta_list of RSModelMeta
+	uint32 config_index = 1;
+
+	// Camera pose from where this record (image) is rendered.
+	CameraPoseCentered camera_pose = 2;
+
+	// Relative path of the image from the directory of the metadata file.
+	string image_relative_path = 3;
+}
+
+// Random synthesis metadata for a ShapeNet model.
+message RSModelMeta {
+	string shapenet_id = 1;
+	repeated RSRecordMeta record_meta_list = 2;
+}
+
+// Random synthesis metadata for a ShapeNet synset.
+message RSSynsetMeta {
+	RSSynsetMetaHeader header = 1;
+	repeated RSModelMeta model_meta_list = 2;
+}

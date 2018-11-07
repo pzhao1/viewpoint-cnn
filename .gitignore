@@ -1,0 +1,7 @@
+data/shapenet/meta_pb2.py
+data/shapenet/temp*.png
+
+learning/log*
+
+*__pycache__/
+*.pyc
