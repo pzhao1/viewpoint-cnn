@@ -98,29 +98,37 @@ def main():
 		)
 
 		# Visualizations
-		visualization_figure = matplotlib.pyplot.figure()
+		visualization_figure = matplotlib.pyplot.figure(figsize=[6.0, 8.0], dpi=100)
+		(image_axes, prob_axes) = visualization_figure.subplots(2, 1, gridspec_kw = {"height_ratios": [2, 1]})
 
-		image_axes = visualization_figure.add_subplot(2, 1, 1)
 		image_axes.imshow(augmented_datum.augmented_rgb_image_float_array)
 		full_rectangle_patch = matplotlib.patches.Rectangle(
-			(full_rectangle.min_x, full_rectangle.min_y), full_rectangle.size_x, full_rectangle.size_y, linewidth=2, edgecolor="g", fill=False
+			(full_rectangle.min_x, full_rectangle.min_y), full_rectangle.size_x, full_rectangle.size_y,
+			linewidth=3, edgecolor="g", linestyle="--", fill=False
 		)
 		image_axes.add_patch(full_rectangle_patch)
 		crop_rectangle_patch = matplotlib.patches.Rectangle(
-			(crop_rectangle.min_x, crop_rectangle.min_y), crop_rectangle.size_x, crop_rectangle.size_y, linewidth=1, edgecolor="r", fill=False
+			(crop_rectangle.min_x, crop_rectangle.min_y), crop_rectangle.size_x, crop_rectangle.size_y,
+			linewidth=1, edgecolor="r", linestyle="-", fill=False
 		)
 		image_axes.add_patch(crop_rectangle_patch)
+		image_axes.axis("off")
+		image_axes.legend(["Full BBox", "Input BBox"])
 
-		prob_axes = visualization_figure.add_subplot(2, 1, 2)
 		gt_azimuth_deg = np.rad2deg(gt_viewpoint_tensor[0])
 		max_azimuth_prob = np.amax(azimuth_prob_vector, axis=None)
-		prob_axes.plot(np.rad2deg(azimuth_sample_vector), azimuth_prob_vector, "b.", label="Prob")
-		prob_axes.plot([gt_azimuth_deg, gt_azimuth_deg], [0.0, max_azimuth_prob], "k-", label="GT", linewidth=2)
+		prob_axes.plot([gt_azimuth_deg, gt_azimuth_deg], [0.0, max_azimuth_prob], "g-", linewidth=3)
+		prob_axes.plot(np.rad2deg(azimuth_sample_vector), azimuth_prob_vector, "b.")
 		for component_index in range(len(em_azimuth_mix_vector)):
 			component_mix = em_azimuth_mix_vector[component_index]
 			component_mu_deg = np.rad2deg(em_azimuth_mu_vector[component_index])
-			prob_axes.plot([component_mu_deg, component_mu_deg], [0.0, component_mix * max_azimuth_prob], 'r-', label="EM", linewidth=1)
+			prob_axes.plot([component_mu_deg, component_mu_deg], [0.0, component_mix * max_azimuth_prob], 'r--', linewidth=1.5)
+		
+		prob_axes.set_xlabel("Azimuth (deg)")
+		prob_axes.set_ylabel("Probability")
+		prob_axes.legend(["True Azimuth", "Output Prob", "Estimated Modes"])
 
+		matplotlib.pyplot.tight_layout()
 		matplotlib.pyplot.show()
 
 

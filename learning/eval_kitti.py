@@ -76,7 +76,7 @@ def main():
 	velo_image02_proj_matrix = kitti_calib.velo_image_proj_matrix(2)
 
 	# Sequence folder
-	kitti_sequence_folder_name = "2011_09_26_drive_0022_sync"
+	kitti_sequence_folder_name = "2011_09_26_drive_0035_sync"
 	kitti_sequence_dir = os.path.join(kitti_date_dir, kitti_sequence_folder_name)
 	tracklets_xml_file_path = os.path.join(kitti_sequence_dir, "tracklet_labels.xml")
 	tracklet_list = data.kitti.load_tracklets_xml_file(tracklets_xml_file_path)
@@ -190,28 +190,32 @@ def main():
 			is_largely_occluded_list.append(tracklet_pose.occlusion_state is data.kitti.TrackletOccState.FULLY)
 
 			# Visualization
-			# if (np.amin(error_vector) > (np.pi / 6)):
-			# 	print(tracklet_pose.occlusion_state)
-			# 	visualization_figure = matplotlib.pyplot.figure()
-			# 	image_axes = visualization_figure.add_subplot(2, 1, 1)
-			# 	image_axes.imshow(kitti_rgb_image_float_array)
-			# 	bounding_rectangle_patch = matplotlib.patches.Rectangle(
-			# 		(crop_rectangle.min_x, crop_rectangle.min_y), crop_rectangle.size_x, crop_rectangle.size_y, 
-			# 		linewidth=1, edgecolor="r", fill=False
-			# 	)
-			# 	image_axes.add_patch(bounding_rectangle_patch)
+			# visualization_figure = matplotlib.pyplot.figure()
+			# image_axes = visualization_figure.add_subplot(2, 1, 1)
+			# image_axes.imshow(kitti_rgb_image_float_array)
+			# bounding_rectangle_patch = matplotlib.patches.Rectangle(
+			# 	(crop_rectangle.min_x, crop_rectangle.min_y), crop_rectangle.size_x, crop_rectangle.size_y, 
+			# 	linewidth=1.5, edgecolor="g", fill=False
+			# )
+			# image_axes.add_patch(bounding_rectangle_patch)
+			# image_axes.axis("off")
 
-			# 	prob_axes = visualization_figure.add_subplot(2, 1, 2)
-			# 	gt_azimuth_deg = np.rad2deg(gt_azimuth)
-			# 	max_azimuth_prob = np.amax(azimuth_prob_vector, axis=None)
-			# 	prob_axes.plot(np.rad2deg(azimuth_sample_vector), azimuth_prob_vector, "b.", label="Prob")
-			# 	prob_axes.plot([gt_azimuth_deg, gt_azimuth_deg], [0.0, max_azimuth_prob], "k-", label="GT", linewidth=2)
-			# 	for component_index in range(len(em_azimuth_mix_vector)):
-			# 		component_mix = em_azimuth_mix_vector[component_index]
-			# 		component_mu_deg = np.rad2deg(em_azimuth_mu_vector[component_index])
-			# 		prob_axes.plot([component_mu_deg, component_mu_deg], [0.0, component_mix * max_azimuth_prob], 'r-', label="EM", linewidth=1)
+			# prob_axes = visualization_figure.add_subplot(2, 1, 2)
+			# gt_azimuth_deg = np.rad2deg(gt_azimuth)
+			# max_azimuth_prob = np.amax(azimuth_prob_vector, axis=None)
+			# prob_axes.plot([gt_azimuth_deg, gt_azimuth_deg], [0.0, max_azimuth_prob], "g-", linewidth=3)
+			# prob_axes.plot(np.rad2deg(azimuth_sample_vector), azimuth_prob_vector, "b.")
+			# for component_index in range(len(em_azimuth_mix_vector)):
+			# 	component_mix = em_azimuth_mix_vector[component_index]
+			# 	component_mu_deg = np.rad2deg(em_azimuth_mu_vector[component_index])
+			# 	prob_axes.plot([component_mu_deg, component_mu_deg], [0.0, component_mix * max_azimuth_prob], 'r--', linewidth=1.5)
+		
+			# prob_axes.set_xlabel("Azimuth (deg)")
+			# prob_axes.set_ylabel("Probability")
+			# prob_axes.legend(["True Azimuth", "Output Prob", "Estimated Modes"])
 
-			# 	matplotlib.pyplot.show()
+			# matplotlib.pyplot.tight_layout()
+			# matplotlib.pyplot.show()
 		
 		print("Finished frame %s" % (entry_file_name_base, ))
 	

@@ -379,9 +379,9 @@ class ShapenetRSAugmentedDataset(torch.utils.data.Dataset):
 		)
 
 		# Add some noise to the augmented image
-		augmented_rgb_image_float_array = skimage.util.random_noise(
-			augmented_rgb_image_float_array, mode="gaussian", clip=True, var=0.005
-		)
+		# augmented_rgb_image_float_array = skimage.util.random_noise(
+		# 	augmented_rgb_image_float_array, mode="gaussian", clip=True, var=0.005
+		# )
 
 		# Construct datum to return
 		augmented_datum = ShapenetRSAugmentedDatum(occlusion_result.size_x, occlusion_result.size_y)
@@ -425,58 +425,59 @@ def construct_rs_augmented_dataset(primary_class_enum, background_dataset, occlu
 
 # Code for testing ShapenetRSAugmentedDataset
 
-if __name__ == "__main__":
-	import matplotlib.pyplot
-	import util.geometry
+# if __name__ == "__main__":
+# 	import matplotlib.pyplot
+# 	import util.geometry
 
-	places2_val_dataset = ImageDirDataset(global_vars.PLACES2_VAL_DIR, False)
-	occlusion_config = util.image.RandomOcclusionConfig()
-	occlusion_config.expansion_ratio = 0.2
-	occlusion_config.occlusion_blob_middle_verticle_prob = 1.0
-	occlusion_config.occlusion_blob_side_lr_prob = 1.0
-	car_rs_augmented_dataset = construct_rs_augmented_dataset(
-		data.object_class.MainClass.CAR, places2_val_dataset, occlusion_config
-	)
+# 	places2_val_dataset = ImageDirDataset(global_vars.PLACES2_VAL_DIR, False)
+# 	occlusion_config = util.image.RandomOcclusionConfig()
+# 	occlusion_config.expansion_ratio = 0.2
+# 	occlusion_config.occlusion_blob_middle_verticle_prob = 1.0
+# 	occlusion_config.occlusion_blob_side_lr_prob = 1.0
+# 	car_rs_augmented_dataset = construct_rs_augmented_dataset(
+# 		data.object_class.MainClass.CAR, places2_val_dataset, occlusion_config
+# 	)
 
-	for dummy_index in range(100):
-		example_index = np.random.randint(0, len(car_rs_augmented_dataset), size=None)
-		augmented_datum = car_rs_augmented_dataset[example_index]
-		occlusion_result = augmented_datum.occlusion_result
+# 	for dummy_index in range(100):
+# 		example_index = np.random.randint(0, len(car_rs_augmented_dataset), size=None)
+# 		augmented_datum = car_rs_augmented_dataset[example_index]
+# 		occlusion_result = augmented_datum.occlusion_result
 
-		visualization_figure = matplotlib.pyplot.figure()
+# 		visualization_figure = matplotlib.pyplot.figure()
 
-		augmented_image_axes = visualization_figure.add_subplot(2, 2, 1)
-		augmented_image_axes.imshow(augmented_datum.augmented_rgb_image_float_array)
-		augmented_image_axes.set_title("Augmented Image")
-		full_rectangle = util.geometry.nonzero_bounding_rectangle(occlusion_result.full_mask)
-		full_rectangle_patch = matplotlib.patches.Rectangle(
-			(full_rectangle.min_x, full_rectangle.min_y), full_rectangle.size_x, full_rectangle.size_y, 
-			linewidth=2, edgecolor="g", fill=False
-		)
-		augmented_image_axes.add_patch(full_rectangle_patch)
-		visible_rectangle = util.geometry.nonzero_bounding_rectangle(occlusion_result.visible_mask)
-		visible_rectangle_patch = matplotlib.patches.Rectangle(
-			(visible_rectangle.min_x, visible_rectangle.min_y), visible_rectangle.size_x, visible_rectangle.size_y, 
-			linewidth=1, edgecolor="r", fill=False
-		)
-		augmented_image_axes.add_patch(visible_rectangle_patch)
+# 		augmented_image_axes = visualization_figure.add_subplot(1, 1, 1)
+# 		augmented_image_axes.imshow(augmented_datum.augmented_rgb_image_float_array)
+# 		full_rectangle = util.geometry.nonzero_bounding_rectangle(occlusion_result.full_mask)
+# 		full_rectangle_patch = matplotlib.patches.Rectangle(
+# 			(full_rectangle.min_x, full_rectangle.min_y), full_rectangle.size_x, full_rectangle.size_y, 
+# 			linewidth=3, edgecolor="g", linestyle="--", fill=False
+# 		)
+# 		augmented_image_axes.add_patch(full_rectangle_patch)
+# 		visible_rectangle = util.geometry.nonzero_bounding_rectangle(occlusion_result.visible_mask)
+# 		visible_rectangle_patch = matplotlib.patches.Rectangle(
+# 			(visible_rectangle.min_x, visible_rectangle.min_y), visible_rectangle.size_x, visible_rectangle.size_y, 
+# 			linewidth=1, edgecolor="r", linestyle="-", fill=False
+# 		)
+# 		augmented_image_axes.add_patch(visible_rectangle_patch)
+# 		augmented_image_axes.legend(["Full BBox", "Visible BBox"])
+# 		augmented_image_axes.axis("off")
 
-		full_mask_axes = visualization_figure.add_subplot(2, 2, 2)
-		full_mask_axes.imshow(occlusion_result.full_mask, cmap="gray")
+# 		# full_mask_axes = visualization_figure.add_subplot(2, 2, 2)
+# 		# full_mask_axes.imshow(occlusion_result.full_mask, cmap="gray")
 
-		visible_mask_axes = visualization_figure.add_subplot(2, 2, 3)
-		visible_mask_axes.imshow(occlusion_result.visible_mask, cmap="gray")
+# 		# visible_mask_axes = visualization_figure.add_subplot(2, 2, 3)
+# 		# visible_mask_axes.imshow(occlusion_result.visible_mask, cmap="gray")
 
-		if (occlusion_result.did_occlusion_object):
-			occ_obj_mask_axes = visualization_figure.add_subplot(2, 2, 4)
-			occ_obj_mask_axes.imshow(occlusion_result.occ_obj_mask, cmap="gray")
-			occ_obj_full_rectangle = occlusion_result.occ_obj_full_rectangle
-			occ_obj_full_rectangle_patch = matplotlib.patches.Rectangle(
-				(occ_obj_full_rectangle.min_x, occ_obj_full_rectangle.min_y), occ_obj_full_rectangle.size_x, occ_obj_full_rectangle.size_y, 
-				linewidth=1, edgecolor="y", fill=False
-			)
-			augmented_image_axes.add_patch(occ_obj_full_rectangle_patch)
+# 		# if (occlusion_result.did_occlusion_object):
+# 		# 	occ_obj_mask_axes = visualization_figure.add_subplot(2, 2, 4)
+# 		# 	occ_obj_mask_axes.imshow(occlusion_result.occ_obj_mask, cmap="gray")
+# 		# 	occ_obj_full_rectangle = occlusion_result.occ_obj_full_rectangle
+# 		# 	occ_obj_full_rectangle_patch = matplotlib.patches.Rectangle(
+# 		# 		(occ_obj_full_rectangle.min_x, occ_obj_full_rectangle.min_y), occ_obj_full_rectangle.size_x, occ_obj_full_rectangle.size_y, 
+# 		# 		linewidth=1, edgecolor="y", fill=False
+# 		# 	)
+# 		# 	augmented_image_axes.add_patch(occ_obj_full_rectangle_patch)
 
 
-		print(augmented_datum.viewpoint_tuple)
-		matplotlib.pyplot.show()
+# 		print(augmented_datum.viewpoint_tuple)
+# 		matplotlib.pyplot.show()
